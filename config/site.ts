@@ -16,5 +16,7 @@ export type NavItem = {
 
 export const navItems: NavItem[] = [
   { title: "홈", href: "/" },
+  { title: "프로젝트", href: "/projects" },
+  { title: "블로그", href: "/blog" },
   { title: "컴포넌트", href: "/showcase" },
 ];
