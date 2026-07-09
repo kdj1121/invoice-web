@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const j=JSON.parse(d);const f=(j.tool_response&&j.tool_response.filePath)||(j.tool_input&&j.tool_input.file_path)||'';if(/\\.(js|jsx|ts|tsx|mjs|cjs)$/.test(f)){require('child_process').spawnSync(process.execPath,['node_modules/eslint/bin/eslint.js','--fix',f],{stdio:'inherit'});}}catch(e){}});\" 2>/dev/null || true",
+            "statusMessage": "ESLint --fix 실행 중..."
+          }
+        ]
+      }
+    ]
+  }
+}
