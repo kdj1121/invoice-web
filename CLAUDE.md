@@ -1,67 +1,45 @@
-# CLAUDE.md
+# 🤖 Claude Code 개발 지침
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+**노션 기반 견적서 관리 시스템 MVP** - 노션을 데이터베이스로 활용하여 견적서를 관리하고, 클라이언트가 웹에서 조회 및 PDF 다운로드할 수 있는 시스템
 
-@AGENTS.md
+📋 상세 프로젝트 요구사항은 @/docs/PRD.md 참조
 
-## Commands
+## 🛠️ 핵심 기술 스택
+
+- **Framework**: Next.js 15.5.3 (App Router + Turbopack)
+- **Runtime**: React 19.1.0 + TypeScript 5
+- **Styling**: TailwindCSS v4 + shadcn/ui (new-york style)
+- **Forms**: React Hook Form + Zod + Server Actions
+- **UI Components**: Radix UI + Lucide Icons
+- **External API**: @notionhq/client (Notion API SDK)
+- **Development**: ESLint + Prettier + Husky + lint-staged
+
+## 📚 개발 가이드
+
+- **📋 프로젝트 요구사항 (PRD)**: `@/docs/PRD.md` - 견적서 시스템 상세 명세
+- **📁 프로젝트 구조**: `@/docs/guides/project-structure.md`
+- **🎨 스타일링 가이드**: `@/docs/guides/styling-guide.md`
+- **🧩 컴포넌트 패턴**: `@/docs/guides/component-patterns.md`
+- **⚡ Next.js 15.5.3 전문 가이드**: `@/docs/guides/nextjs-15.md`
+- **📝 폼 처리 완전 가이드**: `@/docs/guides/forms-react-hook-form.md`
+
+## ⚡ 자주 사용하는 명령어
 
 ```bash
-npm run dev      # 개발 서버 (Turbopack)
-npm run build    # 프로덕션 빌드
-npm run start    # 프로덕션 서버 실행
-npm run lint     # ESLint
+# 개발
+npm run dev         # 개발 서버 실행 (Turbopack)
+npm run build       # 프로덕션 빌드
+npm run check-all   # 모든 검사 통합 실행 (권장)
+
+# UI 컴포넌트
+npx shadcn@latest add button    # 새 컴포넌트 추가
 ```
 
-No test runner is configured in this repo.
-
-To add a new shadcn/ui primitive:
+## ✅ 작업 완료 체크리스트
 
 ```bash
-npx shadcn@latest add [컴포넌트명]
+npm run check-all   # 모든 검사 통과 확인
+npm run build       # 빌드 성공 확인
 ```
 
-To check what's actually available/generated (don't trust older shadcn knowledge — see below):
-
-```bash
-npx shadcn@latest search @shadcn
-npx shadcn@latest view @shadcn/<component>-example
-```
-
-## Architecture
-
-Next.js 16 App Router + TypeScript + Tailwind CSS v4 + shadcn/ui (`base-nova` style) + lucide-react.
-
-### ⚠️ This is not the Next.js / shadcn you know
-
-- Next.js 16 has breaking API/convention changes vs. training data. Read `node_modules/next/dist/docs/` before writing Next.js code (see `AGENTS.md`).
-- This project's shadcn/ui style (`base-nova`, configured in `components.json`) is built on **`@base-ui/react`, not Radix**. Standard Radix-era shadcn knowledge does not apply:
-  - Composition uses base-ui's `render` prop instead of Radix's `asChild`. Pattern: pass a **childless element** to `render` (e.g. `<Button variant="outline" />`), and put the actual visible content as children of the outer component (e.g. `<DialogTrigger render={<Button ... />}>실제 내용</DialogTrigger>`).
-  - The `form` component is a stub in this shadcn version; use **`field`** instead (`Field`, `FieldLabel`, `FieldError`, `FieldGroup`, RHF-agnostic). Install via `npx shadcn add field`.
-  - `Select` needs an `items` prop (value→label array) on `Select` itself for the closed-state label to render — children alone aren't enough.
-  - When unsure about a component's API, verify with `npx shadcn@latest view @shadcn/<component>-example` rather than assuming.
-- This repo's ESLint config flags the common next-themes "mounted" pattern (`useState` + `useEffect(() => setMounted(true))`) via `react-hooks/set-state-in-effect`. Use `useSyncExternalStore` with a no-op subscribe instead to read a server/client snapshot without triggering the rule (see `components/layout/theme-toggle.tsx`).
-
-### Component layering
-
-UI is organized into layers, composed bottom-up:
-
-```
-config/
-  site.ts               사이트 메타·네비게이션 단일 소스 (헤더/푸터/모바일 네비가 참조)
-
-components/
-  ui/                   L1. shadcn CLI로 설치되는 원자적 프리미티브. 직접 수정하지 않는다.
-  layout/               L2. primitive를 조합한 레이아웃 골격 (site-header, site-footer, mobile-nav, theme-provider, theme-toggle)
-  sections/             L3. 랜딩 페이지 섹션 블록 (hero, features, cta, contact-form)
-
-app/
-  layout.tsx            ThemeProvider + SiteHeader + SiteFooter + Toaster 조립
-  page.tsx              랜딩 페이지 (Hero + Features + Cta)
-  showcase/page.tsx      설치된 L1 컴포넌트를 탭으로 분류해 보여주는 쇼케이스
-```
-
-- `components/ui/*` files are shadcn-CLI-managed primitives — treat as generated, don't hand-edit; re-run the CLI instead.
-- `config/site.ts` is the single source of truth for site metadata/nav, consumed by the header, footer, and mobile nav.
-- Tailwind v4 is configured CSS-first in `app/globals.css` (no `tailwind.config.*`); design tokens live there as CSS variables.
-- Path aliases (see `components.json`): `@/components`, `@/components/ui`, `@/lib`, `@/hooks`.
+💡 **상세 규칙은 위 개발 가이드 문서들을 참조하세요**
